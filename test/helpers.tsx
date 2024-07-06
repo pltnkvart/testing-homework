@@ -1,24 +1,24 @@
 import { MemoryRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import { initStore, ApplicationState } from "../src/client/store";
-import React, { ReactElement } from "react";
+import { initStore } from "../src/client/store";
+import React from "react";
 import { Application } from "../src/client/Application";
-import { render, RenderResult } from "@testing-library/react";
 import { CartApi, ExampleApi } from "../src/client/api";
 
-export const appRender = (
-	entries: [string, ...string[]],
-	store?: ReturnType<typeof initStore>
-) => {
-	store = store ?? initStore(new ExampleApi("/hw/store"), new CartApi());
+export const BASE_NAME = "/";
+export const BASE_URL = "http://localhost";
 
-	const application = (
-		<MemoryRouter initialEntries={entries} initialIndex={0}>
+export const createApplication = (
+	api: ExampleApi | undefined = new ExampleApi(BASE_URL),
+	cart: CartApi | undefined = new CartApi()
+) => {
+	const store = initStore(api, cart);
+
+	return (
+		<MemoryRouter>
 			<Provider store={store}>
 				<Application />
 			</Provider>
 		</MemoryRouter>
 	);
-
-	return application;
 };

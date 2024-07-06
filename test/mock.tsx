@@ -5,16 +5,17 @@ import { fakerRU as faker } from "@faker-js/faker";
 
 const commerce = faker.commerce;
 
-export const mockProducts: Product[] = Array(5).map((_, index) => {
-	return {
+export const mockProducts: Product[] = Array.from(
+	{ length: 5 },
+	(_, index) => ({
 		id: index,
 		name: `${commerce.productAdjective()} ${commerce.product()}`,
 		description: commerce.productDescription(),
 		price: Number(commerce.price()),
 		color: faker.color.human(),
 		material: commerce.productMaterial(),
-	};
-});
+	})
+);
 
 export const mockProductsShortInfo: ProductShortInfo[] = mockProducts.map(
 	({ id, name, price }) => ({ id, name, price })
@@ -45,8 +46,8 @@ export class MockCartApi extends CartApi {
 		return this.state > 0
 			? {
 					1: {
-						name: "Медведь",
-						price: 100,
+						name: mockProducts[0].name,
+						price: mockProducts[0].price,
 						count: this.state,
 					},
 			  }

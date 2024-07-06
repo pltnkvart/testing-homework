@@ -1,0 +1,174 @@
+import userEvent from "@testing-library/user-event";
+import { BASE_NAME, createApplication } from "../helpers";
+import {
+	fireEvent,
+	render,
+	screen,
+	waitFor,
+	within,
+} from "@testing-library/react";
+import {
+	MockApi,
+	MockCartApi,
+	mockProducts,
+	mockProductsShortInfo,
+} from "../mock";
+
+describe("Проверка страницы с каталогом", () => {
+	it("В каталоге должны отображаться товары, список которых приходит с сервера", async () => {
+		const { container } = render(
+			createApplication(new MockApi(BASE_NAME), new MockCartApi())
+		);
+
+		await waitFor(() => {
+			fireEvent.click(screen.getByRole("link", { name: "Catalog" }));
+		});
+
+		expect(container.querySelectorAll(".ProductItem").length).toBe(
+			mockProducts.length
+		);
+	});
+
+	it("Для каждого товара в каталоге отображается название, цена и ссылка на страницу с подробной информацией о товаре", async () => {
+		const { container } = render(
+			createApplication(new MockApi(BASE_NAME), new MockCartApi())
+		);
+
+		await userEvent.click(screen.getByRole("link", { name: "Catalog" }));
+
+		const productElements = await waitFor(() =>
+			container.querySelectorAll(".ProductItem")
+		);
+
+		mockProductsShortInfo.forEach((product, index) => {
+			const productElement = productElements[index];
+			if (productElement instanceof HTMLElement) {
+				expect(within(productElement).getByText(product.name));
+				expect(within(productElement).getByText(`$${product.price}`));
+				expect(
+					within(productElement).getByRole("link", {
+						name: "Details",
+					})
+				);
+			}
+		});
+	});
+
+	it('На странице с подробной информацией отображаются: название товара, его описание, цена, цвет, материал и кнопка "добавить в корзину"', async () => {
+		const { container } = render(
+			createApplication(new MockApi(BASE_NAME), new MockCartApi())
+		);
+
+		await userEvent.click(screen.getByRole("link", { name: "Catalog" }));
+
+		const item = await waitFor(() =>
+			container.querySelector(".ProductItem")
+		);
+
+		// @ts-ignore
+		const link = item.querySelector(".ProductItem-DetailsLink");
+		// @ts-ignore
+		await userEvent.click(link);
+
+		await waitFor(() => {
+			expect(screen.getByText(mockProducts[0].name));
+			expect(screen.getByText(mockProducts[0].description));
+			expect(screen.getByText("$" + mockProducts[0].price));
+			expect(screen.getByText(mockProducts[0].color));
+			expect(screen.getByText(mockProducts[0].material));
+			expect(screen.getByRole("button", { name: "Add to Cart" }));
+		});
+	});
+
+	it("Если товар уже добавлен в корзину, в каталоге и на странице товара должно отображаться сообщение об этом", async () => {
+		const { container } = render(
+			createApplication(new MockApi(BASE_NAME), new MockCartApi())
+		);
+
+		await userEvent.click(screen.getByRole("link", { name: "Catalog" }));
+
+		const item = await waitFor(() =>
+			container.querySelector(".ProductItem")
+		);
+		// @ts-ignore
+		const link = item.querySelector(".ProductItem-DetailsLink");
+		// @ts-ignore
+		await userEvent.click(link);
+
+		const btn = screen.getByRole("button", { name: "Add to Cart" });
+		await userEvent.click(btn);
+
+		await waitFor(() => {
+			expect(screen.getByText("Item in cart"));
+		});
+
+		await userEvent.click(screen.getByRole("link", { name: "Catalog" }));
+
+		await waitFor(() => {
+			expect(screen.getByText("Item in cart"));
+		});
+	});
+
+	it('Если товар уже добавлен в корзину, повторное нажатие кнопки "добавить в корзину" должно увеличивать его количество', async () => {
+		const { container } = render(
+			createApplication(new MockApi(BASE_NAME), new MockCartApi())
+		);
+
+		await userEvent.click(screen.getByRole("link", { name: "Catalog" }));
+
+		const item = await waitFor(() =>
+			container.querySelector(".ProductItem")
+		);
+
+		// @ts-ignore
+		const link = item.querySelector(".ProductItem-DetailsLink");
+		// @ts-ignore
+		await userEvent.click(link);
+
+		const btn = screen.getByRole("button", { name: "Add to Cart" });
+		await userEvent.click(btn);
+		await userEvent.click(btn);
+		await userEvent.click(btn);
+
+		await userEvent.click(screen.getByRole("link", { name: "Cart (1)" }));
+
+		await waitFor(() => {
+			expect(screen.getByText("3"));
+		});
+	});
+
+	it("содержимое корзины должно сохраняться между перезагрузками страницы", async () => {
+		const { container } = render(
+			createApplication(new MockApi(BASE_NAME), new MockCartApi())
+		);
+
+		await userEvent.click(screen.getByRole("link", { name: "Catalog" }));
+
+		const item = await waitFor(() =>
+			container.querySelector(".ProductItem")
+		);
+
+		// @ts-ignore
+		const link = item.querySelector(".ProductItem-DetailsLink");
+		// @ts-ignore
+		await userEvent.click(link);
+
+		const btn = screen.getByRole("button", { name: "Add to Cart" });
+		await userEvent.click(btn);
+		await userEvent.click(btn);
+
+		await userEvent.click(screen.getByRole("link", { name: "Cart (1)" }));
+
+		await waitFor(() => {
+			expect(screen.getByText("2"));
+		});
+
+		await userEvent.click(screen.getByRole("link", { name: "Catalog" }));
+
+		await userEvent.click(screen.getByRole("link", { name: "Cart (1)" }));
+
+		await waitFor(() => {
+			expect(screen.getByText("2"));
+		});
+	});
+});
