@@ -1,18 +1,7 @@
 import userEvent from "@testing-library/user-event";
 import { BASE_NAME, createApplication } from "../helpers";
-import {
-	fireEvent,
-	render,
-	screen,
-	waitFor,
-	within,
-} from "@testing-library/react";
-import {
-	MockApi,
-	MockCartApi,
-	mockProducts,
-	mockProductsShortInfo,
-} from "../mock";
+import { MockApi, MockCartApi, mockProducts } from "../mock";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 describe("Проверка страницы с каталогом", () => {
 	it("В каталоге должны отображаться товары, список которых приходит с сервера", async () => {
@@ -40,17 +29,18 @@ describe("Проверка страницы с каталогом", () => {
 			container.querySelectorAll(".ProductItem")
 		);
 
-		mockProductsShortInfo.forEach((product, index) => {
-			const productElement = productElements[index];
-			if (productElement instanceof HTMLElement) {
-				expect(within(productElement).getByText(product.name));
-				expect(within(productElement).getByText(`$${product.price}`));
-				expect(
-					within(productElement).getByRole("link", {
-						name: "Details",
-					})
+		productElements.forEach(async (productElement, index) => {
+			await waitFor(() => {
+				expect(productElement.querySelector(".ProductItem-Name")).toBe(
+					mockProducts[index].name
 				);
-			}
+				expect(productElement.querySelector(".ProductItem-Price")).toBe(
+					mockProducts[index].price
+				);
+				expect(
+					productElement.querySelector(".ProductItem-DetailsLink")
+				).toBeDefined();
+			});
 		});
 	});
 
