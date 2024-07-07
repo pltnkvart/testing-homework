@@ -21,6 +21,19 @@ export const mockProductsShortInfo: ProductShortInfo[] = mockProducts.map(
 	({ id, name, price }) => ({ id, name, price })
 );
 
+export const mockCartData = {
+	1: {
+		name: mockProducts[0].name,
+		price: mockProducts[0].price,
+		count: 3,
+	},
+	2: {
+		name: mockProducts[1].name,
+		price: mockProducts[1].price,
+		count: 1,
+	},
+};
+
 export class MockApi extends ExampleApi {
 	async getProducts(): Promise<AxiosResponse<ProductShortInfo[]>> {
 		return Promise.resolve({
@@ -48,7 +61,12 @@ export class MockCartApi extends CartApi {
 					1: {
 						name: mockProducts[0].name,
 						price: mockProducts[0].price,
-						count: this.state,
+						count: 3,
+					},
+					2: {
+						name: mockProducts[1].name,
+						price: mockProducts[1].price,
+						count: 1,
 					},
 			  }
 			: {};

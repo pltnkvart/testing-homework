@@ -4,6 +4,8 @@ import { MockApi, MockCartApi, mockProducts } from "../mock";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 describe("Проверка страницы с каталогом", () => {
+	const api = new MockApi(BASE_NAME);
+	const cartApi = new MockCartApi();
 	it("В каталоге должны отображаться товары, список которых приходит с сервера", async () => {
 		const { container } = render(
 			createApplication(new MockApi(BASE_NAME), new MockCartApi())
@@ -55,10 +57,10 @@ describe("Проверка страницы с каталогом", () => {
 			container.querySelector(".ProductItem")
 		);
 
-		// @ts-ignore
-		const link = item.querySelector(".ProductItem-DetailsLink");
-		// @ts-ignore
-		await userEvent.click(link);
+		if (item) {
+			const link = item.querySelector(".ProductItem-DetailsLink");
+			if (link) await userEvent.click(link);
+		}
 
 		await waitFor(() => {
 			expect(screen.getByText(mockProducts[0].name));
@@ -80,10 +82,11 @@ describe("Проверка страницы с каталогом", () => {
 		const item = await waitFor(() =>
 			container.querySelector(".ProductItem")
 		);
-		// @ts-ignore
-		const link = item.querySelector(".ProductItem-DetailsLink");
-		// @ts-ignore
-		await userEvent.click(link);
+
+		if (item) {
+			const link = item.querySelector(".ProductItem-DetailsLink");
+			if (link) await userEvent.click(link);
+		}
 
 		const btn = screen.getByRole("button", { name: "Add to Cart" });
 		await userEvent.click(btn);
@@ -110,10 +113,10 @@ describe("Проверка страницы с каталогом", () => {
 			container.querySelector(".ProductItem")
 		);
 
-		// @ts-ignore
-		const link = item.querySelector(".ProductItem-DetailsLink");
-		// @ts-ignore
-		await userEvent.click(link);
+		if (item) {
+			const link = item.querySelector(".ProductItem-DetailsLink");
+			if (link) await userEvent.click(link);
+		}
 
 		const btn = screen.getByRole("button", { name: "Add to Cart" });
 		await userEvent.click(btn);
@@ -138,10 +141,10 @@ describe("Проверка страницы с каталогом", () => {
 			container.querySelector(".ProductItem")
 		);
 
-		// @ts-ignore
-		const link = item.querySelector(".ProductItem-DetailsLink");
-		// @ts-ignore
-		await userEvent.click(link);
+		if (item) {
+			const link = item.querySelector(".ProductItem-DetailsLink");
+			if (link) await userEvent.click(link);
+		}
 
 		const btn = screen.getByRole("button", { name: "Add to Cart" });
 		await userEvent.click(btn);
