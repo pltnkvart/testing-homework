@@ -1,4 +1,5 @@
-import { BASE_NAME, createApplication } from "../helpers";
+import { createApplication } from "../helpers";
+import { BASE_NAME } from "../testplane/utils";
 import { findByText, render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
 import { MockApi, MockCartApi, mockCartData, mockProducts } from "../mock";

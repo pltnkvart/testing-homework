@@ -4,9 +4,7 @@ import { initStore } from "../src/client/store";
 import React from "react";
 import { Application } from "../src/client/Application";
 import { CartApi, ExampleApi } from "../src/client/api";
-
-export const BASE_NAME = "/";
-export const BASE_URL = "http://localhost";
+import { BASE_URL } from "./testplane/utils";
 
 export const createApplication = (
 	api: ExampleApi | undefined = new ExampleApi(BASE_URL),

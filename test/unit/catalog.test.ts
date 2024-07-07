@@ -1,5 +1,6 @@
 import userEvent from "@testing-library/user-event";
-import { BASE_NAME, createApplication } from "../helpers";
+import { createApplication } from "../helpers";
+import { BASE_NAME } from "../testplane/utils";
 import { MockApi, MockCartApi, mockProducts } from "../mock";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
