@@ -18,4 +18,22 @@ describe("Корзина", () => {
 
 		expect(cartTable).toExist();
 	});
+
+	it("При добавлении товара в корзину, увеличивается индикатор количества товаров рядом со ссылкой на корзину", async ({
+		browser,
+	}) => {
+		await browser.url(getPageUrl("catalog/0"));
+		const addToCartBtn = await browser.$(".ProductDetails-AddToCart");
+
+		await addToCartBtn.click();
+		const cartLink1 = await browser.$('[href="/hw/store/cart"]');
+		const cartLinkText1 = await cartLink1.getText();
+		await browser.url("/hw/store/catalog/1");
+		await addToCartBtn.click();
+		const cartLink2 = await browser.$('[href="/hw/store/cart"]');
+		const cartLinkText2 = await cartLink2.getText();
+
+		expect(cartLinkText1).toEqual("Cart (1)");
+		expect(cartLinkText2).toEqual("Cart (2)");
+	});
 });
